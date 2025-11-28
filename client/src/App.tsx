@@ -52,7 +52,7 @@ function App() {
       console.error('Error uploading video:', err);
     }
   };
-
+  
   return (
     <div className="App">
       <h1>Upload Video</h1>

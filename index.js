@@ -19,17 +19,6 @@ const multerParser = multer(
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MongoDB Connection
-// const connectDB = async () => {
-//     try {
-//         await mongoose.connect(process.env.MONGO_URI);
-//         console.log('MongoDB Connected');
-//     } catch (err) {
-//         console.error('MongoDB Connection Error:', err);
-//         process.exit(1);
-//     }
-// };
-
 // Apollo Server Setup
 const server = new ApolloServer({
     typeDefs,
