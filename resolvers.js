@@ -4,9 +4,6 @@ import fs from 'fs';
 import { GraphQLUpload } from 'graphql-upload-minimal';
 import sharp from 'sharp';
 import axios from 'axios';
-// import Video from './models/Video.js';
-// import User from './models/User.js';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -168,16 +165,18 @@ const resolvers = {
                 throw new Error(`Failed to upload files: ${error.message}`);
             }
         },
+
+        //? Upload video to BunnyCDN Stream 
         uploadVideoToBunny: async (_, { file, title }) => {
             const { createReadStream, filename, mimetype } = await file;
 
-            // Basic validation
+            //? Validate MIME Type
             if (!mimetype.startsWith('video/')) {
                 throw new Error('File must be a video');
             }
 
             try {
-                // 1. Create Video Entry in BunnyCDN
+                //? 1. Create Video Entry in BunnyCDN Stream Library
                 const createResponse = await axios.post(
                     BUNNY_BASE_URL,
                     { title: title || filename },
@@ -191,15 +190,7 @@ const resolvers = {
 
                 const videoId = createResponse.data.guid;
 
-                // 2. Save initial metadata to MongoDB
-                // const newVideo = new Video({
-                //     title: title || filename,
-                //     bunnyVideoId: videoId,
-                //     status: 'uploading'
-                // });
-                // await newVideo.save();
-
-                // 3. Upload the video stream to BunnyCDN
+                //? 3. Upload the video stream to BunnyCDN
                 const stream = createReadStream();
 
                 await axios.put(
@@ -214,17 +205,14 @@ const resolvers = {
                         maxBodyLength: Infinity
                     }
                 );
-
-                // 4. Update MongoDB status
-                // newVideo.status = 'processing';
-                // await newVideo.save();
-
+                //? 4. Return video metadata After successful upload
                 return {
                     id: videoId,
                     title: title || filename,
                     bunnyVideoId: videoId,
                     status: 'processing',
                     createdAt: new Date().toISOString()
+
                 };
 
             } catch (error) {

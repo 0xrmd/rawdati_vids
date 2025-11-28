@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import express from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -10,7 +9,6 @@ import resolvers from './resolvers.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
-import { handleFileUpload } from './file-upload-utils.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const multerParser = multer(
@@ -19,16 +17,13 @@ const multerParser = multer(
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Apollo Server Setup
+//* Apollo Server Setup
 const server = new ApolloServer({
     typeDefs,
     resolvers,
     csrfPrevention: false,
 });
-
 const startServer = async () => {
-    // await connectDB();
-
     try {
         await server.start();
         console.log('Apollo Server started');
@@ -37,19 +32,19 @@ const startServer = async () => {
         process.exit(1);
     }
 
-    // Middleware
+    //* Middleware
     app.use(cors());
-    app.use(graphqlUploadExpress()); //Handle multipart requests for file uploads
+    app.use(graphqlUploadExpress());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    // Ensure req.body exists for Apollo Server (Express 5 / Apollo Server 4 compatibility)
+
     app.use((req, res, next) => {
         if (!req.body) req.body = {};
         next();
     });
 
-    // Serve uploaded files statically (for the local upload resolver)
+    //* POST REQ FOR Video UPLOADS
     app.post('/uploads', multerParser.fields([
         { name: 'video', }
     ]), async (req, res) => {
@@ -67,10 +62,10 @@ const startServer = async () => {
 
     });
 
-    // Apollo Middleware
+    //* Apollo Middleware
     app.use('/graphql', expressMiddleware(server));
 
-    // Root route
+    //* Root route for testing
     app.get('/', (req, res) => {
         res.json({ message: 'Welcome to the GraphQL API' });
     });
@@ -80,5 +75,6 @@ const startServer = async () => {
         console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
     });
 };
+// TODO CHECK resolvers.js File 
 
 startServer();
