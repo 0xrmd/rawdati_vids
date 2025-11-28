@@ -10,7 +10,7 @@ A full-stack video upload application featuring a React frontend and a Node.js/G
 - **API:** GraphQL (Apollo Server)
 - **Database:** MongoDB (Mongoose)
 - **File Handling:** `graphql-upload-minimal`, `multer`
-- **External Service:** BunnyCDN (Video Storage)
+- **External Service:** BunnyCDN (Video Streaming)
 
 ### Frontend (`/client`)
 - **Framework:** React
